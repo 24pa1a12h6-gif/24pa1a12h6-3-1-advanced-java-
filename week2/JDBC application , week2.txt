@@ -1,0 +1,155 @@
+**QUESTION = act as a  senior java professional ,who has experience in developing java applications using jdbc ,jsp.servelets. develop a jdbc application which will interact with data
+  base and perform the following task create a student table with roll no , name and address field and insert few records and also perform update delete and display the content of 
+  record  , im a basic learner i want to execute above jdbc program in linux environment .could u plz guide me how to develop and execute above jdbc program in linux environment
+  from scratch
+
+*step 1 = (Install Java):-
+                          Update the package repository  = sudo apt update
+                          Install Java JDK               =  sudo apt install openjdk-17-jdk
+                          verify the installation        =  java --version
+                          
+*step 2 = (Install MySQL Server):-    
+                                 intall MySQL = sudo apt install mysql-server
+                                 start MySQL  = sudo systemctl start mysql           
+                                 Enable MySQL to start automatically =  sudo systemctl enable mysql
+                                 check MySQL status = sudo systemctl status mysql
+                                 
+*step 3  = (Login to MySQL) :-
+                              sudo mysql
+                              
+                              
+*Step 4 = ( Create Database ):-
+                               CREATE DATABASE studentdb; 
+                               Use the database  =  USE studentdb;
+                               
+*Step 5 = ( Create Database User):-
+                                   Create a user     =  CREATE USER 'javauser'@'localhost' IDENTIFIED BY 'password';                              
+                                   Grant privileges  =  GRANT ALL PRIVILEGES ON studentdb.* TO 'javauser'@'localhost';
+                                   Reload privileges =  FLUSH PRIVILEGES;
+                                   Exit MySQL        =  EXIT;
+                                   
+*Step 6 = ( Create Project Directory):-
+                                       Create a project directory = mkdir ~/jdbc                                    
+                                       Move into the directory    = cd ~/jdbc
+                                       
+*Step 7 = (Download MySQL JDBC Driver):-
+                                        Download the MySQL Connector/J archive =   wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-9.3.0.tar.gz
+                                        Extract the archive                    =   tar -xzf mysql-connector-j-9.3.0.tar.gz
+                                        Copy the JDBC driver JAR into the project directory = cp mysql-connector-j-9.3.0/mysql-connector-j-9.3.0.jar 
+                                        Verify the files  =  ls
+                                        
+                                        
+*Step 8  = (Create Java Source File):-  
+                                       Create the Java source file  = touch StudentJDBC.java
+                                       Open the file using Nano     = nano StudentJDBC.java
+                                       Paste the Java program       ==
+                                       
+                                       
+                                       
+import java.sql.*;
+public class StudentJDBC {
+
+    static final String URL = "jdbc:mysql://localhost:3306/studentdb";
+    static final String USER = "javauser";
+    static final String PASSWORD = "password";
+
+    public static void main(String args[]) {
+
+        try {
+
+            // Load Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect
+            Connection con =
+                    DriverManager.getConnection(URL, USER, PASSWORD);
+
+            Statement stmt = con.createStatement();
+
+            // Create Table
+            String createTable =
+                    "CREATE TABLE IF NOT EXISTS student (" +
+                    "rollno INT PRIMARY KEY," +
+                    "name VARCHAR(50)," +
+                    "address VARCHAR(100))";
+
+            stmt.execute(createTable);
+
+            System.out.println("Table created.");
+
+            // Insert Records
+            stmt.executeUpdate(
+                    "INSERT INTO student VALUES (1,'Ravi','Chennai')");
+
+            stmt.executeUpdate(
+                    "INSERT INTO student VALUES (2,'John','Delhi')");
+
+            stmt.executeUpdate(
+                    "INSERT INTO student VALUES (3,'Anita','Bangalore')");
+
+            System.out.println("Records Inserted.");
+
+            // Update
+            stmt.executeUpdate(
+                    "UPDATE student SET address='Mumbai' WHERE rollno=2");
+
+            System.out.println("Record Updated.");
+
+            // Delete
+            stmt.executeUpdate(
+                    "DELETE FROM student WHERE rollno=3");
+
+            System.out.println("Record Deleted.");
+
+            // Display
+
+            ResultSet rs =
+                    stmt.executeQuery("SELECT * FROM student");
+
+            System.out.println("--------------------------------------");
+
+            while(rs.next()) {
+
+                System.out.println(
+                        rs.getInt("rollno")+"  "
+                        +rs.getString("name")+"  "
+                        +rs.getString("address"));
+            }
+
+            System.out.println("--------------------------------------");
+
+            rs.close();
+            stmt.close();
+            con.close();
+
+        }
+
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+                                       Save   =   Ctrl + O
+                                       Press  =   Enter
+                                       Exit   =   Ctrl + X
+
+
+*Step 9  = (Compile the Program):-
+                                  Compile the Java source file.      =   javac -cp .:mysql-connector-j-9.3.0.jar StudentJDBC.java
+                                  verify the generated class file.   =   ls
+
+
+*Step 10 =  (Run the Program):-
+                                Execute the program    =      java -cp .:mysql-connector-j-9.3.0.jar StudentJDBC
+
+
+
+*Step 11 =   (Verify the Database):-
+                                     Login to MySQL      =  mysql -u javauser -p
+                                     Enter the password  =  password 
+                                     Select the database =  USE studentdb;
+                                     Display the tables  =  SHOW TABLES;        
+                                     Display all records =  SELECT * FROM student;
+                                     Exit MySQL          =  EXIT;
+                                                                                                 
